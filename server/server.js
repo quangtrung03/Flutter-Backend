@@ -50,7 +50,7 @@ app.use(
       // Allow all localhost origins and production
       if (origin.startsWith('http://localhost:') || 
           origin.startsWith('http://127.0.0.1:') ||
-          origin === 'https://mobilenc.onrender.com') {
+          origin === 'https://flutter-backend-purk.onrender.com') {
         return callback(null, true);
       }
       
