@@ -74,7 +74,7 @@ const loginUser = async (req, res) => {
         userName: checkUser.userName,
         avatar: checkUser?.avatar,
       },
-      "CLIENT_SECRET_KEY",
+      process.env.JWT_SECRET || "CLIENT_SECRET_KEY",
       { expiresIn: tokenExpiry }
     );
 
@@ -124,7 +124,7 @@ const authMiddleware = async (req, res, next) => {
     });
 
   try {
-    const decoded = jwt.verify(token, "CLIENT_SECRET_KEY");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "CLIENT_SECRET_KEY");
 
     // db
     // console.log({123: decoded})
