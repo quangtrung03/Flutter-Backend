@@ -75,6 +75,28 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("."))
 
+// Health check route
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'CAFÉ Backend API is running!', 
+    status: 'OK',
+    version: '1.0.0',
+    endpoints: {
+      auth: '/api/auth',
+      shop: '/api/shop',
+      admin: '/api/admin',
+      common: '/api/common'
+    }
+  });
+});
+
+// API health check
+app.get('/api', (req, res) => {
+  res.json({ 
+    message: 'CAFÉ API is working!', 
+    status: 'OK' 
+  });
+});
 
 app.use('/api', avatarRouter)
 app.use("/api/auth", authRouter)
