@@ -1,4 +1,4 @@
-const { imageUploadUtil } = require("../../helpers/cloudinary.js");
+const { imageUploadUtil, ensureHttpsUrl } = require("../../helpers/cloudinary.js");
 const Product = require("../../models/Product");
 
 // 🖼️ Upload hình ảnh lên Cloudinary
@@ -8,7 +8,17 @@ const handleImageUpload = async (req, res) => {
     const url = `data:${req.file.mimetype};base64,${b64}`;
     const result = await imageUploadUtil(url);
 
-    res.json({ success: true, result });
+    // Force HTTPS URL
+    const secureUrl = ensureHttpsUrl(result.secure_url || result.url);
+
+    res.json({ 
+      success: true, 
+      result: {
+        ...result,
+        url: secureUrl,
+        secure_url: secureUrl
+      }
+    });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: "Xảy ra lỗi khi upload ảnh!" });
@@ -48,7 +58,14 @@ const addProduct = async (req, res) => {
 const fetchAllProducts = async (req, res) => {
   try {
     const products = await Product.find({});
-    res.status(200).json({ success: true, data: products });
+    
+    // Ensure all image URLs are HTTPS
+    const secureProducts = products.map(product => ({
+      ...product.toObject(),
+      image: ensureHttpsUrl(product.image)
+    }));
+    
+    res.status(200).json({ success: true, data: secureProducts });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Lỗi khi lấy sản phẩm" });

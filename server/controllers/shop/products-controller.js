@@ -1,4 +1,5 @@
 const Product = require("../../models/Product.js");
+const { ensureHttpsUrl } = require("../../helpers/cloudinary.js");
 
 // 📌 Định nghĩa các phương thức sắp xếp sản phẩm
 const sortingStrategies = {
@@ -28,7 +29,14 @@ const getFilteredProducts = async (req, res) => {
     const sort = sortingStrategies[sortBy] || sortingStrategies["price-lowtohigh"];
 
     const products = await Product.find(filters).sort(sort);
-    res.status(200).json({ success: true, data: products });
+    
+    // Ensure all image URLs are HTTPS
+    const secureProducts = products.map(product => ({
+      ...product.toObject(),
+      image: ensureHttpsUrl(product.image)
+    }));
+    
+    res.status(200).json({ success: true, data: secureProducts });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Lỗi khi lấy sản phẩm" });
@@ -46,7 +54,13 @@ const getProductDetails = async (req, res) => {
       return res.status(404).json({ success: false, message: "Sản phẩm không tồn tại!" });
     }
 
-    res.status(200).json({ success: true, data: product });
+    // Ensure image URL is HTTPS
+    const secureProduct = {
+      ...product.toObject(),
+      image: ensureHttpsUrl(product.image)
+    };
+
+    res.status(200).json({ success: true, data: secureProduct });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Lỗi khi lấy chi tiết sản phẩm" });
