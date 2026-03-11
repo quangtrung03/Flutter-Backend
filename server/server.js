@@ -30,11 +30,7 @@ const supportRequestRouter = require('./routes/common/supportRequest-routes.js')
 const supportChatRouter = require('./routes/common/supportChat-route.js');
 
 mongoose
-  .connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-  })
-  
+  .connect(process.env.MONGODB_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((error) => console.log(error));
 
