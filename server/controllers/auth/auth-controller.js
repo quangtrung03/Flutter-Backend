@@ -116,12 +116,22 @@ const logoutUser = (req, res) => {
 
 // auth middleware
 const authMiddleware = async (req, res, next) => {
-  const token = req.cookies.token;
-  if (!token)
+  // Prefer Authorization header for mobile/web clients, fallback to cookie
+  let token = req.cookies?.token;
+  if (!token) {
+    const authHeader = req.headers?.authorization;
+    if (authHeader && typeof authHeader === 'string') {
+      const match = authHeader.match(/^Bearer\s+(.+)$/i);
+      if (match) token = match[1];
+    }
+  }
+
+  if (!token) {
     return res.status(401).json({
       success: false,
       message: "Người dùng không hợp lệ!",
     });
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || "CLIENT_SECRET_KEY");

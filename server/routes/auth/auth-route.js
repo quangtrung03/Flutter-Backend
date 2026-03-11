@@ -14,6 +14,13 @@ const router = express.Router();
 router.post('/register', authController.registerUser); 
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
+router.get("/me", authMiddleware, (req, res) => {
+  const user = req.user;
+  res.status(200).json({
+    success: true,
+    user,
+  });
+});
 router.get("/check-auth", authMiddleware, (req, res) => {
   const user = req.user;
   res.status(200).json({
